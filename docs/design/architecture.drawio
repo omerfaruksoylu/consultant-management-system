@@ -1,0 +1,43 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Architecture" id="arch">
+    <mxGraphModel dx="1377" dy="797" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="b_user" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#555555;strokeWidth=2;verticalAlign=top;fontStyle=1;fontSize=16;" value="User&#39;s computer" vertex="1">
+          <mxGeometry height="450" width="360" x="30" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="b_server" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#555555;strokeWidth=2;verticalAlign=top;fontStyle=1;fontSize=16;" value="Company server" vertex="1">
+          <mxGeometry height="450" width="850" x="520" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor" parent="1" style="shape=umlActor;verticalLabelPosition=middle;labelPosition=right;align=left;verticalAlign=middle;html=1;outlineConnect=0;fontSize=13;" value="Planner /&lt;br&gt;Consultant" vertex="1">
+          <mxGeometry height="110" width="30" x="195" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="browser" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f0fb;strokeColor=#333333;strokeWidth=2;fontSize=15;" value="Web browser" vertex="1">
+          <mxGeometry height="90" width="240" x="90" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="fastapi" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eaf6ea;strokeColor=#333333;strokeWidth=2;fontSize=14;" value="&lt;b&gt;FastAPI application&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;text-align:left&quot;&gt;- login &amp;amp; department check&lt;br&gt;- restriction check&lt;br&gt;- Jinja2 templates (HTML)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="170" width="380" x="600" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fdf1e2;strokeColor=#333333;strokeWidth=2;fontSize=15;" value="SQLite&lt;br&gt;database" vertex="1">
+          <mxGeometry height="150" width="190" x="1115" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="e_uses" edge="1" parent="1" source="actor" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=13;labelBackgroundColor=#ffffff;" target="browser" value="uses">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_req" edge="1" parent="1" source="browser" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.3;" target="fastapi" value="HTTP request (form)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_html" edge="1" parent="1" source="fastapi" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.7;entryX=1;entryY=0.75;" target="browser" value="HTML page">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sql" edge="1" parent="1" source="fastapi" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;labelBackgroundColor=#ffffff;exitX=1;exitY=0.35;entryX=0;entryY=0.35;" target="db" value="SQL query&lt;br&gt;(SQLAlchemy)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_data" edge="1" parent="1" source="db" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.7;entryX=1;entryY=0.7;" target="fastapi" value="data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

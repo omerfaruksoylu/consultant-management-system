@@ -1,18 +1,21 @@
 # Consultant Management System
 
-Graduation Project Report — Week 2 Draft
+Graduation Project Report
+
+Student: Ömer Faruk Soylu
+Repository: https://github.com/omerfaruksoylu/consultant-management-system
 
 ## 1. Introduction
 
-Many companies work with consulting firms, and this number is growing every day. Working with a consulting firm is often cheaper, and the company does not have to manage salary payments or insurance for each person. Companies can also choose the best firm and end the collaboration whenever they want.
+Many companies work with consulting firms. Working with a consulting firm is often cheaper, and the company does not have to manage salary payments or insurance for each person. Companies can also choose the best firm and end the collaboration whenever they want.
 
 ## 2. Problem Statement
 
-Planning between companies and consultants is still done through meetings and manually prepared schedules. The problem is that there are many restrictions. For example, one consultant does not work on Mondays and Thursdays, and the same consultant is not available on Friday of the following week. The person who prepares the schedule has to keep all of this information in mind.
+Planning between companies and consultants is still done through meetings and manually prepared schedules. The problem is that there are many restrictions. For example, one consultant does not work on Mondays and Thursdays, and the same consultant is not available on Friday of the following week. The person who prepares the schedule has to keep all of this information in mind. Research on spreadsheets also shows that mistakes in manually prepared spreadsheets are common and very hard to notice (Panko, 2015).
 
 ## 3. Motivation
 
-My goal is to add these restrictions to a system and make this planning much easier. In this way, mistakes will be reduced, and the process will be quicker and easier.
+My goal is to add these restrictions to a system and make this planning much easier. In this way, mistakes will be reduced, and the process will be quicker and easier. Personnel scheduling is a well-studied problem, and the restrictions used in this project belong to known constraint groups in the literature, namely time-related constraints and cost measures (Van den Bergh et al., 2013).
 
 ## 4. Project Objective
 
@@ -50,12 +53,14 @@ As described in the problem statement, planning is done through meetings and man
 To make the planning process easier by turning it into an automated system. The planner can plan much more easily because the system checks the restrictions, and each consultant can see their own work clearly.
 
 **Which features are essential for the first prototype?**
-The tasks that are assigned must be shown correctly in a table. Small bugs are acceptable at this stage, but the main structure must work so that it can be shown to a user. Login, the calendar view and the .ics download can wait.
+The tasks that are assigned must be shown correctly in a table. Small bugs are acceptable at this stage, but the main structure must work so that it can be shown to a user. Login and the calendar view can wait.
 
 **Checkpoint**
 The system is used by planners in companies that work with consulting firms, and by the consultants of these firms. Today, planning is done through meetings and manually prepared schedules, so the planner has to keep many restrictions in mind, such as working days, leave days, a weekly day limit and a monthly budget limit. This leads to mistakes and misunderstandings between the company and the consulting firm. The first version will let the planner assign tasks while the system checks these restrictions automatically, and it will show the assigned tasks in a table. Compared to Week 1, two things changed: a third user role (the planner) was added, and the restrictions were defined more clearly as four types.
 
 ### 6.2 User Roles
+
+Table 1 shows the three user roles of the system and what each role can do.
 
 *Table 1: User roles*
 
@@ -67,6 +72,8 @@ The system is used by planners in companies that work with consulting firms, and
 
 ## 7. Functional Requirements
 
+Table 2 lists the functional requirements. Each requirement has a priority: Must (required for the first version), Should (important but can come later) or Could (only if time allows).
+
 *Table 2: Functional requirements*
 
 | ID | Requirement statement | Priority |
@@ -77,9 +84,10 @@ The system is used by planners in companies that work with consulting firms, and
 | FR-04 | The system shall allow the planner to add leave days for a consultant. | Must |
 | FR-05 | The system shall reject a task assignment that falls on a non-working day or a leave day, or exceeds the weekly limit or the monthly budget, and shall display the reason. | Must |
 | FR-06 | The system shall display a consultant's assigned tasks on a read-only calendar for that consultant. | Should |
-| FR-07 | The system shall allow a consultant to download their calendar as an .ics file. | Could |
 
 ## 8. Non-Functional Requirements
+
+Table 3 lists the non-functional requirements and how each one will be verified.
 
 *Table 3: Non-functional requirements*
 
@@ -90,6 +98,8 @@ The system is used by planners in companies that work with consulting firms, and
 | NFR-03 | Performance | The calendar of one department with 50 consultants for one month shall load within 2 seconds on the development laptop. | Measure the API response time with test data of 50 consultants. |
 
 ## 9. Scope, Constraints and Assumptions
+
+Table 4 summarises what is included and excluded, the main project constraints and the assumptions.
 
 *Table 4: Scope, constraints and assumptions*
 
@@ -103,7 +113,7 @@ The system is used by planners in companies that work with consulting firms, and
 | Out of scope | AI agent for managing restrictions by voice or chat |
 | Out of scope | Mobile application and Excel import |
 | Constraint | The project must be completed in nine weeks by one developer. |
-| Constraint | The developer is learning React during the project. |
+| Constraint | The developer is also attending another intensive training programme during the semester. |
 | Constraint | Development and testing are done on one personal laptop. |
 | Assumption | Users have a modern web browser and access to the company network. |
 | Assumption | Each consultant belongs to only one department. |
@@ -135,14 +145,138 @@ Acceptance criteria:
 
 ## 11. Development Plan
 
+Table 5 shows the planned milestone for each remaining week.
+
 *Table 5: Development plan*
 
 | Week | Project-specific milestone |
 |---|---|
 | Week 3 | Architecture diagram, database tables (departments, users, consultants, leave days, tasks) and API endpoint list |
 | Week 4 | Prototype: the planner can add a consultant and assign tasks, invalid assignments are rejected with a reason, and the assigned tasks are shown in a table |
-| Week 5 | Login with three roles, department data isolation and the first React screens (consultant list, task assignment) |
+| Week 5 | Login with three roles, department data isolation and the first web pages (consultant list, task assignment) |
 | Week 6 | Read-only consultant calendar and automated tests for all four restrictions and for data isolation |
-| Week 7 | Installation guide with requirements files; .ics download; Docker setup and live demo if time allows |
+| Week 7 | Installation guide with requirements files; Docker setup and live demo if time allows |
 | Week 8 | Report completion, professional README and screenshots |
 | Week 9 | Final demonstration and presentation |
+
+## 12. Methodology and System Design
+
+### 12.1 Methodology
+
+The project follows an incremental approach. The most important part of the system, the restriction check, is developed and tested first as a separate module. After that, the web layer, the database and the login are added around it step by step. Each week ends with a small result that can be demonstrated, as shown in the development plan (Table 5). This approach fits the project because the main risk is in the restriction logic, not in the user interface, so the core is verified before the rest is built.
+
+### 12.2 Proposed System
+
+The goal of the system is to let a planner assign tasks to consultants while the system checks the restrictions automatically. The users are the admin, the planner and the consultant (Table 1). The main functions are department and consultant management, task assignment with a restriction check, and a read-only view of tasks for consultants.
+
+The system has clear boundaries. Users only use a web browser on their own computer. The web application and the database run together on one server inside the company network. The system does not depend on any external service or API, and it does not send e-mails.
+
+### 12.3 System Architecture
+
+Figure 1 presents the proposed architecture.
+
+![Figure 1](design/architecture.png)
+
+*Figure 1: System architecture of the Consultant Management System*
+
+The user opens a page in the web browser and sends a form, for example a new task assignment. The browser sends this request over HTTP to the FastAPI application on the server. FastAPI first checks who the user is and which department they belong to. If the request is a task assignment, FastAPI reads the consultant's restrictions and existing tasks from the SQLite database and passes them to the restriction check module. If the assignment is allowed, the task is saved in the database; if not, it is rejected with a reason. In both cases, FastAPI creates the result page with a Jinja2 template and sends it back to the browser as HTML. If the database cannot be reached, nothing is saved and the user sees an error message. This structure was selected because all processing happens in one place on the server, which keeps the system simple for a single developer.
+
+Table 6 describes the responsibility of each component.
+
+*Table 6: Component responsibilities*
+
+| Component | Responsibility / main input | Output / connection |
+|---|---|---|
+| Web browser (user's computer) | Shows pages and sends forms entered by the user | HTTP requests to FastAPI |
+| FastAPI application (server) | Receives requests, checks login and department, calls the restriction check, creates HTML pages with Jinja2 templates | HTML pages to the browser; read and write operations to the database |
+| Restriction check module (inside FastAPI) | Receives a consultant, the existing tasks and a date; checks the four restriction types | "Allowed" or "rejected" with a reason |
+| SQLite database (server) | Stores departments, users, consultants, leave days and tasks | Data to FastAPI through SQLAlchemy |
+
+### 12.4 Example Data Flow: Assigning a Task
+
+Table 7 follows one important use case, a planner assigning a task, from beginning to end.
+
+*Table 7: End-to-end flow of a task assignment*
+
+| Step | Component | Input, operation and output |
+|---|---|---|
+| 1 | Web browser | The planner selects a consultant, enters a task title and a date, and sends the form. |
+| 2 | FastAPI application | Checks that the user is logged in as a planner and that the consultant belongs to the planner's department. Checks that the date is valid. |
+| 3 | SQLite database | Returns the consultant's working days, weekly limit, monthly budget, leave days and existing tasks. |
+| 4 | Restriction check module | Checks the four restriction types. If one fails, it returns the reason, for example "Consultant is on leave on 2026-10-14". |
+| 5 | FastAPI application | If allowed, saves the task and shows the updated task table. If rejected, does not save anything and shows the reason on the page. |
+
+Failure case: if the database is not available in step 3, the task is not saved and the planner sees an error message asking them to try again.
+
+### 12.5 Data Design
+
+The data entered into the system are departments, users, consultants with their restrictions, leave days and tasks. All data are stored in one SQLite database file on the server. Only demo data with invented names will be used during development. Passwords are stored as salted hashes (NFR-01). Table 8 shows the planned tables and their key fields.
+
+*Table 8: Planned database tables*
+
+| Table | Key fields |
+|---|---|
+| departments | id, name |
+| users | id, username, password_hash, role (admin / planner / consultant), department_id, consultant_id (only for consultants) |
+| consultants | id, name, department_id, working_weekdays, weekly_limit, monthly_budget_days |
+| leave_days | id, consultant_id, date |
+| tasks | id, consultant_id, title, date |
+
+### 12.6 Requirements-to-Design Traceability
+
+Table 9 shows how the most important requirements from Week 2 are handled in the design.
+
+*Table 9: Requirements-to-design traceability*
+
+| ID | Requirement in my project | Design response / component |
+|---|---|---|
+| FR-03 | Add a consultant with working weekdays, a weekly limit and a monthly budget | consultants table and a consultant form page in FastAPI |
+| FR-05 | Reject an assignment that breaks a restriction and show the reason | Restriction check module, called by FastAPI before a task is saved |
+| FR-06 | Show a consultant their own tasks (read-only) | A page that only lists tasks where the consultant id matches the logged-in user |
+| NFR-01 | Passwords stored as salted hashes | Login part of FastAPI hashes passwords before saving them in the users table |
+| NFR-02 | A planner cannot see another department's data | Every database query is filtered by the logged-in user's department in one central function |
+
+### 12.7 Technology Selection
+
+FastAPI was selected for the backend because it checks incoming data automatically using Python type hints and creates an interactive test page, which reduces the amount of code (FastAPI, n.d.-a). Table 10 records two important technology decisions.
+
+*Table 10: Architecture decision records*
+
+| | ADR-01 | ADR-02 |
+|---|---|---|
+| Issue | How should the user interface be built? | Which database should be used? |
+| Selected option | Server-rendered pages with Jinja2 templates in FastAPI | SQLite |
+| Alternative | React as a separate frontend application | PostgreSQL |
+| Reason / trade-off | Everything stays in one language (Python) and one project, which fits a single developer with limited time. The trade-off is that pages are less interactive than in React (Meta Open Source, n.d.). | SQLite needs no installation or separate server and stores everything in one file. Its trade-off is weaker support for many users writing at the same time, which is acceptable for one department's planners (SQLite, n.d.). Because SQLAlchemy is used, a later move to PostgreSQL is possible. |
+| Reference | FastAPI (n.d.-b) | SQLite (n.d.) |
+
+### 12.8 Design Risks and Week 4 Prototype
+
+Table 11 lists two realistic risks and how they will be handled early.
+
+*Table 11: Design risks and mitigation*
+
+| Risk | Potential impact | Mitigation / verification |
+|---|---|---|
+| R1: Week, month or date calculations in the restriction check are wrong | Invalid assignments could be accepted, which breaks the main goal | Automated tests for each restriction type, including edge cases such as a new week or a new month |
+| R2: A planner can see data of another department | Private planning data could leak between departments | One central department filter for all queries and an automated test that tries to access another department's data |
+
+**Week 4 prototype goal:** In Week 4, I will demonstrate a task assignment page, where the planner's form passes through FastAPI and the restriction check module to produce either a new row in the task table or a rejection message with the reason. A screenshot of both cases and the test output will prove that it works.
+
+### 12.9 Changes Since Week 2
+
+Two changes were made after the Week 2 requirements. First, the user interface will be built with server-rendered templates instead of React (ADR-01). Second, the calendar download as an .ics file (former FR-07, priority Could) was removed from the first version. Both changes were made to keep the project realistic for one developer within nine weeks. The Must requirements did not change.
+
+## References
+
+FastAPI. (n.d.-a). *FastAPI*. Retrieved November 13, 2026, from https://fastapi.tiangolo.com/
+
+FastAPI. (n.d.-b). *Templates*. Retrieved November 13, 2026, from https://fastapi.tiangolo.com/advanced/templates/
+
+Meta Open Source. (n.d.). *Learn React*. Retrieved November 13, 2026, from https://react.dev/learn
+
+Panko, R. R. (2015). What we don't know about spreadsheet errors today: The facts, why we don't believe them, and what we need to do. In *Proceedings of the EuSpRIG 2015 Conference*. European Spreadsheet Risks Interest Group. https://arxiv.org/abs/1602.02601
+
+SQLite. (n.d.). *Appropriate uses for SQLite*. Retrieved November 13, 2026, from https://www.sqlite.org/whentouse.html
+
+Van den Bergh, J., Beliën, J., De Bruecker, P., Demeulemeester, E., & De Boeck, L. (2013). Personnel scheduling: A literature review. *European Journal of Operational Research, 226*(3), 367–385. https://doi.org/10.1016/j.ejor.2012.11.029
