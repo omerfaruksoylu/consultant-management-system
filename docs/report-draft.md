@@ -267,6 +267,164 @@ Table 11 lists two realistic risks and how they will be handled early.
 
 Two changes were made after the Week 2 requirements. First, the user interface will be built with server-rendered templates instead of React (ADR-01). Second, the calendar download as an .ics file (former FR-07, priority Could) was removed from the first version. Both changes were made to keep the project realistic for one developer within nine weeks. The Must requirements did not change.
 
+## 13. Implementation
+
+### 13.1 Implementation Overview
+
+In Week 4, I implemented the first working prototype of the system. It covers FR-05, which is the main requirement of the project: the system must reject a task assignment that breaks one of the four restriction types and show the reason. The prototype is a single web page. The planner selects a consultant, enters a date and a task title, and sends the form. The system checks the restrictions. If the assignment is allowed, the task is saved in the database and appears in the task table. If it is not allowed, nothing is saved and the reason is shown on the page.
+
+The prototype has clear boundaries. It has no login, roles or departments yet (FR-01, FR-02, NFR-01, NFR-02). Consultants and leave days cannot be added from the interface yet (FR-03, FR-04); two consultants with invented names ("Ayse Demo" and "Mehmet Demo") and one leave day are added automatically when the application starts for the first time. These parts are planned for Week 5.
+
+### 13.2 Development Environment and Technologies
+
+Table 12 lists the actual tools and versions used in Week 4. The exact package versions are saved in `backend/requirements.txt`, so the same environment can be created on another computer.
+
+*Table 12: Development environment*
+
+| Tool / library | Version | Role in the project |
+|---|---|---|
+| Windows 11, VS Code | – | Operating system and code editor |
+| Python | 3.14.7 | Programming language |
+| FastAPI | 0.163.1 | Web framework: receives requests and calls the right function |
+| Uvicorn | 0.54.0 | Server that runs the FastAPI application on http://127.0.0.1:8000 |
+| SQLAlchemy | 2.1.8 | Connects Python code to the database |
+| SQLite | (included in Python) | Database stored in one file, `backend/cms.db` |
+| Jinja2 | 3.1.6 | Creates the HTML page from a template and Python data |
+| python-multipart | 0.0.34 | Needed by FastAPI to read HTML form data |
+| pytest | 9.2.0 | Runs the automated tests |
+| Git, GitHub | – | Version control and project history |
+
+All packages are installed in a virtual environment (`backend/venv`), which keeps the project's packages separate from other Python projects on the same computer. The `venv` folder and the database file are excluded from the repository with `.gitignore`. The technology choices follow the decisions in section 12.7 (ADR-01 and ADR-02).
+
+### 13.3 Prototype Implementation
+
+The prototype follows the architecture in section 12.3. Table 13 shows the main files and their responsibilities.
+
+*Table 13: Source files of the prototype*
+
+| File | Responsibility |
+|---|---|
+| `backend/app/constraints.py` | Restriction check module. The function `check_assignment` checks the four restriction types in order and returns the first one that fails. It has no database or web code, so it can be tested on its own. |
+| `backend/app/database.py` | Database connection and three tables: `consultants`, `leave_days` and `tasks`. The tables are created automatically when the application starts. |
+| `backend/app/main.py` | FastAPI application. `GET /` shows the page. `POST /tasks` receives the form, reads the consultant's data from the database, calls the restriction check and saves the task if it is allowed. |
+| `backend/app/templates/index.html` | Jinja2 template: the form, the result message, the consultant table and the task table. |
+| `backend/tests/test_constraints.py` | Five automated tests: one allowed case and one test for each restriction type. |
+
+The flow of one task assignment is the same as in Table 7, without the login and department checks in step 2:
+
+1. **Input:** the planner selects "Ayse Demo", enters 2026-11-17 and the title "Budget check", and clicks "Assign". The browser sends a POST request to `/tasks`.
+2. **Processing:** FastAPI converts the form fields into Python values (a number, a date and a text). `main.py` reads the consultant's working days, limits, leave days and existing tasks from SQLite and passes them to `check_assignment`.
+3. **Output:** the assignment is allowed, so the task is saved and the page shows "Task assigned to Ayse Demo on 2026-11-17." in a green box (Figure 2). When a restriction is broken, the page shows the reason in a red box (Figures 3 and 4).
+
+![Figure 2](weekly-progress/week-04/04-task-accepted.png)
+
+*Figure 2: An allowed assignment. The task is saved and appears in the task table.*
+
+Figure 2 shows that the whole flow works: the form data reached FastAPI, passed the restriction check and was saved in the database, because the new row appears in the task table.
+
+![Figure 3](weekly-progress/week-04/05-not-working-day.png)
+
+*Figure 3: Rejection because the consultant does not work on Fridays*
+
+![Figure 4](weekly-progress/week-04/05-weekly-limit.png)
+
+*Figure 4: Rejection because the weekly limit (2 days) is already reached*
+
+Figures 3 and 4 show that a rejected assignment is not saved: the task table does not change, and the reason from the restriction check module is displayed to the planner.
+
+The restriction check module was also tested automatically. The output of the test run on my computer was:
+
+```
+platform win32 -- Python 3.14.7, pytest-9.2.0, pluggy-1.7.0
+configfile: pytest.ini
+testpaths: tests
+collected 5 items
+
+tests/test_constraints.py::test_allowed PASSED
+tests/test_constraints.py::test_non_working_day PASSED
+tests/test_constraints.py::test_leave_day PASSED
+tests/test_constraints.py::test_weekly_limit PASSED
+tests/test_constraints.py::test_monthly_budget PASSED
+
+5 passed in 0.03s
+```
+
+**Verification.** Table 14 lists the inputs that I tried in the running application, including normal, boundary and invalid inputs.
+
+*Table 14: Verification of the prototype*
+
+| No | Input | Expected result | Actual result |
+|---|---|---|---|
+| P01 | Ayse Demo, 2026-11-16 (Monday), "Payroll report review" | Allowed | Allowed, task saved |
+| P02 | Ayse Demo, 2026-11-17 (Tuesday), "Budget check" | Allowed (second day of the week) | Allowed, task saved (Figure 2) |
+| P03 | Ayse Demo, 2026-11-20 (Friday) | Rejected: non-working day | Rejected: "Consultant does not work on Fridays." (Figure 3) |
+| P04 | Ayse Demo, a third day in the same week (boundary: weekly limit is 2) | Rejected: weekly limit | Rejected: "Weekly limit reached (2/2 days)." (Figure 4) |
+| P05 | Leave day | Rejected: leave day | Covered by the automated test `test_leave_day` |
+| P06 | Mehmet Demo, 2026-11-24, title containing only spaces | Rejected: empty title | **Defect:** the task was saved without a title (Figure 5). Corrected, see section 13.4 (Figure 6). |
+
+### 13.4 Technical Challenges and Solutions
+
+**Challenge 1: Windows blocked a part of SQLAlchemy.** After the database code was added, the application did not start. The error was:
+
+```
+from sqlalchemy import select
+...
+ImportError: DLL load failed while importing _util_cy:
+Uygulama Denetimi ilkesi bu dosyayı engelledi.
+```
+
+The message means "the Application Control policy blocked this file". SQLAlchemy includes compiled `.pyd` files that make some operations faster, and the Smart App Control feature of Windows on my computer blocked them. I considered two solutions. Turning off Smart App Control was rejected, because it lowers the security of the computer and cannot be turned on again without resetting Windows. Instead, I deleted the eight `.pyd` files inside `venv\Lib\site-packages\sqlalchemy`. SQLAlchemy also contains the same code as normal Python files and uses them when the compiled files are missing. After this, the application started without errors. The cost is a small loss of speed, which is not noticeable with the small amount of data in this project. Because the files come back when the packages are reinstalled, this step was added to the README.
+
+**Challenge 2: A task without a title was accepted (P06).** The title field in the form has the HTML attribute `required`, so an empty field cannot be sent. However, when I typed only spaces, the browser accepted the field as filled, and the task was saved without a visible title (Figure 5). The reason is that Python treats a text that contains only spaces as a non-empty value. I added a check in `main.py` that removes the spaces at the beginning and end of the title (`title.strip()`) and rejects the assignment if nothing remains. The check is done on the server, because the browser check can be bypassed by sending a request without the form. After the fix, the same input is rejected with "Task title cannot be empty." (Figure 6), and normal assignments still work. The fix is in commit `86b5699`.
+
+![Figure 5](weekly-progress/week-04/06-bug-empty-title.png)
+
+*Figure 5: Before the fix. A task containing only spaces as its title was saved (row 2026-11-24).*
+
+![Figure 6](weekly-progress/week-04/07-bug-fixed.png)
+
+*Figure 6: After the fix. The same input is rejected with a clear message.*
+
+### 13.5 Development Process — Stage 1
+
+*Table 15: Development Stage 1 record*
+
+| Field | Description |
+|---|---|
+| Date | 16 November 2026 |
+| Objective | Demonstrate that the selected approach (FastAPI, Jinja2, SQLAlchemy and SQLite) works for the main workflow of the system (FR-05). |
+| Implemented feature | Task assignment page: form → restriction check → task saved or rejected with the reason. Database with three tables and demo data. |
+| Technical decision | The restriction check is kept in a separate module (`constraints.py`) without database or web code. The web part only reads the data and calls it. This makes the rules testable without starting the server and keeps them in one place. |
+| Problem | (1) Windows Smart App Control blocked compiled SQLAlchemy files. (2) A title containing only spaces was accepted. |
+| Solution | (1) Removed the compiled files so SQLAlchemy uses its Python versions. (2) Added a server-side check for an empty title. |
+| Commits | `1c9b5ac` project set-up; `a556657` restriction check and tests; `a044845` task assignment page; `86b5699` empty title fix |
+| Evidence | Figures 2–6, Table 14, test output in section 13.3 |
+| Next step | Week 5: forms for adding consultants and leave days, login with three roles and department separation. |
+
+### 13.6 Limitations and Next Steps
+
+The prototype has the following known limitations:
+
+- There is no login, so anyone who opens the page can assign tasks. Roles and departments are planned for Week 5 (FR-01, FR-02, NFR-01, NFR-02).
+- Consultants and leave days can only be added in the code (demo data), not from the interface (FR-03, FR-04).
+- The task table shows the consultant's id instead of the name.
+- If the form is sent with a consultant id that does not exist (possible only without the browser form), the server returns an error (HTTP 500) instead of a clear message. This will be handled in Week 5 as part of input validation.
+- Week 5 will continue with the remaining Must requirements. Table 16 shows the status of the requirements at the end of Week 4.
+
+*Table 16: Requirement status at the end of Week 4*
+
+| ID | Week 4 status | Week 5 target |
+|---|---|---|
+| FR-01 Login and roles | Not implemented | Implement |
+| FR-02 Departments | Not implemented | Implement |
+| FR-03 Add consultant | Database table ready; no form (demo data only) | Implement the form |
+| FR-04 Add leave days | Database table ready; no form (demo data only) | Implement the form |
+| FR-05 Restriction check | Implemented and verified | Improve input validation |
+| FR-06 Consultant view | Not implemented | Week 5 or 6 |
+| NFR-01 Password hashing | Not implemented | Implement with login |
+| NFR-02 Department isolation | Not implemented | Implement with departments |
+| NFR-03 Performance | Not evaluated | Week 6 |
+
 ## References
 
 FastAPI. (n.d.-a). *FastAPI*. Retrieved November 13, 2026, from https://fastapi.tiangolo.com/

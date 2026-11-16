@@ -1,0 +1,14 @@
+# Week 4 Progress Log
+
+| Field | Student response |
+|---|---|
+| Tasks planned | Build the first working prototype for FR-05: a task assignment page that checks the four restriction types and either saves the task or shows the reason for the rejection. |
+| Tasks completed | Day 1: GitHub Issue opened, FR-05 selected. Day 2: virtual environment, FastAPI and dependencies installed, minimal application started, `requirements.txt` created. Day 3: restriction check module and tests added to the repository; SQLite tables (consultants, leave days, tasks); task assignment page with Jinja2. Day 4: normal, boundary and invalid inputs tried; one defect found and fixed. Day 5: screenshots collected. Day 6: README updated with run instructions. Day 7: report chapter 13 and this log. |
+| GitHub commits | [1c9b5ac](https://github.com/omerfaruksoylu/consultant-management-system/commit/1c9b5ac) set up FastAPI project; [a556657](https://github.com/omerfaruksoylu/consultant-management-system/commit/a556657) restriction check module and tests; [a044845](https://github.com/omerfaruksoylu/consultant-management-system/commit/a044845) task assignment page; [86b5699](https://github.com/omerfaruksoylu/consultant-management-system/commit/86b5699) fix: reject tasks with an empty title |
+| Evidence | Screenshots in [week-04/](week-04/): application and Swagger page running (01, 02), server start (03), allowed assignment (04), rejections (05), defect before and after the fix (06, 07). Test output: 5 passed (report section 13.3). |
+| Problems encountered | 1) Windows Smart App Control blocked the compiled files of SQLAlchemy (`ImportError: DLL load failed while importing _util_cy`), so the application did not start. 2) A task title containing only spaces was accepted and saved. |
+| Solutions attempted | 1) Turning off Smart App Control was rejected for security reasons; the compiled `.pyd` files were deleted so SQLAlchemy uses its pure Python versions. 2) Added a server-side check with `title.strip()`; the input is now rejected with "Task title cannot be empty." |
+| Tests / checks performed | 5 automated tests for the restriction check (all passed). Manual checks P01–P06 in the running application (report Table 14). |
+| References consulted | FastAPI documentation (Templates, Form data), SQLAlchemy documentation, pytest documentation. |
+| Report sections updated | New chapter 13: 13.1 Implementation Overview, 13.2 Development Environment and Technologies, 13.3 Prototype Implementation, 13.4 Technical Challenges and Solutions, 13.5 Development Process — Stage 1, 13.6 Limitations and Next Steps. Tables 12–16, Figures 2–6. |
+| Next week plan | Week 5: forms to add consultants and leave days (FR-03, FR-04), login with three roles and password hashing (FR-01, NFR-01), departments and department separation (FR-02, NFR-02), better input validation. |
