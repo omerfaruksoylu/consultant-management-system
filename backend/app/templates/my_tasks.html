@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>My tasks</h1>
+  <table>
+    <tr><th>Day</th><th>Title</th></tr>
+    {% for t in tasks %}
+      <tr><td>{{ t.day }}</td><td>{{ t.title }}</td></tr>
+    {% else %}
+      <tr><td colspan="2">No tasks assigned yet.</td></tr>
+    {% endfor %}
+  </table>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Departments</h1>
+  <form method="post" action="/departments">
+    <input type="text" name="name" placeholder="Department name" required>
+    <button type="submit">Add</button>
+  </form>
+  <table>
+    <tr><th>Id</th><th>Name</th></tr>
+    {% for d in departments %}
+      <tr><td>{{ d.id }}</td><td>{{ d.name }}</td></tr>
+    {% endfor %}
+  </table>
+{% endblock %}
