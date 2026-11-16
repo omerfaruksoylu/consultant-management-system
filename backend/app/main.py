@@ -58,6 +58,8 @@ def home(request: Request):
 @app.post("/tasks")
 def assign_task(request: Request, consultant_id: int = Form(), day: date = Form(), title: str = Form()):
     with SessionLocal() as db:
+        if not title.strip():
+            return show_page(request, db, "Rejected: Task title cannot be empty.", ok=False)
         consultant = db.get(Consultant, consultant_id)
         result = check(db, consultant, day)
         if result.allowed:
