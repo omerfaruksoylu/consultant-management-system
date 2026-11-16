@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Consultant Management System</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 760px; margin: 30px auto; }
+    form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .ok { background: #e6f4e6; padding: 10px; }
+    .error { background: #fde4e4; padding: 10px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Consultant Management System</h1>
+  <h2>Assign a task</h2>
+
+  <form method="post" action="/tasks">
+    <select name="consultant_id">
+      {% for c in consultants %}
+        <option value="{{ c.id }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="date" name="day" required>
+    <input type="text" name="title" placeholder="Task title" required>
+    <button type="submit">Assign</button>
+  </form>
+
+  {% if message %}
+    <p class="{{ 'ok' if ok else 'error' }}">{{ message }}</p>
+  {% endif %}
+
+  <h2>Consultants</h2>
+  <table>
+    <tr><th>Name</th><th>Working days</th><th>Weekly limit</th><th>Monthly budget</th></tr>
+    {% for c in consultants %}
+      <tr><td>{{ c.name }}</td><td>{{ c.working_weekdays }}</td><td>{{ c.weekly_limit }}</td><td>{{ c.monthly_budget_days }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Assigned tasks</h2>
+  <table>
+    <tr><th>Day</th><th>Consultant</th><th>Title</th></tr>
+    {% for t in tasks %}
+      <tr><td>{{ t.day }}</td><td>{{ t.consultant_id }}</td><td>{{ t.title }}</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
