@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Database
+*.db
+*.sqlite3
+
+# Secrets
+.env
+
+# Editor / OS
+.vscode/
+Thumbs.db
+.DS_Store
